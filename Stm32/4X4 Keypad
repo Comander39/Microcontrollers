@@ -1,0 +1,77 @@
+Settings(Cube IDE):
+-------------------
+PA0-> GPIO_Output = Keypad R1
+PA1-> GPIO_Output = Keypad R2
+PA2-> GPIO_Output = Keypad R3
+PA3-> GPIO_Output = Keypad R4
+
+PB12-> GPIO_Input = Keypad C1
+PB13-> GPIO_Input = Keypad C2
+PB14-> GPIO_Input = Keypad C3
+PB15-> GPIO_Input = Keypad C4
+
+Main Code:
+----------
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+uint8_t key;
+uint8_t character[4][4]={
+		{49,50,51,65},      //ASCII value of 1,2,3,A
+		{52,53,54,66},      //ASCII value of 4,5,6,B
+		{55,56,57,67},      //ASCII value of 7,8,9,C
+		{42,48,35,68}       //ASCII value of *,0,#,D
+};
+uint16_t pins []={GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3};
+/* USER CODE END 0 */
+
+
+
+while (1)
+  {
+	  for(int i=0; i<4; i++)
+	  {
+
+			HAL_GPIO_WritePin(GPIOA, pins[i], 1);  //R[i] is HIGH
+			int j = keypad();
+        if (j>3)
+        {
+          key = character[3][1];             //When key is not pressed the function returns greater than 3 and key value is shown "0"
+        }
+        else
+        {
+          key = character[i][j];             //Key value is according to the row and column
+          HAL_Delay(5);
+        }
+			HAL_GPIO_WritePin(GPIOA, pins[i], 0);  //R[i] is LOW
+	  }
+}
+
+
+
+
+/* USER CODE BEGIN 4 */
+int keypad()
+{
+	if (HAL_GPIO_ReadPin(C1_GPIO_Port, C1_Pin))
+	{
+		return 0;
+	}
+	else if (HAL_GPIO_ReadPin(C2_GPIO_Port, C2_Pin))
+	{
+		return 1;
+	}
+	else if (HAL_GPIO_ReadPin(C3_GPIO_Port, C3_Pin))
+	{
+		return 2;
+	}
+	else if (HAL_GPIO_ReadPin(C4_GPIO_Port, C4_Pin))
+	{
+		return 3;
+	}
+	else
+		return 100;
+}
+/* USER CODE END 4 */
+
+
